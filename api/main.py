@@ -18,8 +18,8 @@ async def read_root():
     return {k: list(v.columns) for k, v in db.items()}
 
 # Get request
-@app.get("/{table_name}/{player}")
-async def read_item(table_name: str, player: str, year: int = Query(default=None), col: list[str] = Query(default=None)):  
+@app.get("/{table_name}/")
+async def read_item(table_name: str, player: str = Query(default=None), year: int = Query(default=None), col: list[str] = Query(default=None)):  
     # Select table
     table = db[table_name]
     
@@ -29,7 +29,7 @@ async def read_item(table_name: str, player: str, year: int = Query(default=None
 
     # Filter for player
     if player != None:
-        player = player.replace('_', ' ').title()
+        player = player.replace('_', ' ').replace('+', ' ').replace('&', ' ').title()
         table = table[(table['winner_name'] == player) | (table['loser_name'] == player)].copy()
 
     # Filter for cols
