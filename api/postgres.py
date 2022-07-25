@@ -10,9 +10,7 @@ def db_pipeline(db = 'ATP_tour_data', user = 'postgres', pw = 'Nadal22', query =
     cur.execute(query)
     
     column_names = [desc[0] for desc in cur.description]
-    output = []
-    for row in cur:
-        output.append(row)
+    output = [row for row in cur]
     
     # Close connection & return output
     conn.close()
