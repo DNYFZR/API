@@ -1,6 +1,6 @@
 # Fast API in a Container
 
-Developing with FastAPI and Docker.
+Developing with FastAPI and Docker :
 
 ---
 
@@ -35,13 +35,13 @@ uvicorn main:app --reload
 To build the image :
 
 ````ps1
-docker build -t fast_api_001 .
+docker build -t api_image .
 ````
 
-Build & run the container :
+Build & run the container (adding access to localhost) :
 
 ````ps1
-docker run -d --name api_dev -p 80:80 fast_api_001
+docker run -d --name api_container --add-host host.docker.internal:host-gateway -p 80:80 api_image:latest
 ````
 
 ---
@@ -54,3 +54,11 @@ docker run -d --name api_dev -p 80:80 fast_api_001
 | Alternative | http://localhost/redoc
 
 ---
+
+## Scripts
+
+|**Script**|**Notes**
+|--|--
+|main.py| The code for the API development
+|postgres.py| The code for connecting and executing queries on the PG DB
+|Dockerfile| For building the docker image of the API
