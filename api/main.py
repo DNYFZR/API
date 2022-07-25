@@ -12,25 +12,40 @@ app = FastAPI()
 # Landing Page
 @app.get("/")
 async def read_root():
-    return {k: list(v.columns) for k, v in db.items()}
+    root = {
+        'API parameters': {
+            'table_name': 'Name of table - only atp_tour at present', 
+            'player': 'Names with spaces replaced with underscores - rafael_nadal',
+            'tournament': 'Filter for specific tournament', 
+            'year_from': 'Integer for starting year (inclusive)',
+            'year_to': 'Integer for ending year (inclusive)',
+            'col': 'name of column to pull through - each entered separately',
+            }, 
+        'Tables': {k: list(v.columns) for k, v in db.items()},
+        }
 
+    return root
 # Get request
 @app.get("/{table_name}/")
-async def read_item(table_name: str, player: str = Query(default=None), year: int = Query(default=None), col: list[str] = Query(default=None), winner: str = Query(default=None), ):  
+async def read_item(table_name: str, player: str = Query(default=None), year_from: int = Query(default=None), year_to: int = Query(default=None), col: list[str] = Query(default=None), tournament: str = Query(default=None), ):  
     # Select table
     table = db[table_name]
     
     # Filter for year
-    if year != None:
-        table = table[table['tourney_date'].dt.year == year].copy()
+    if year_from != None:
+        table = table[table['tourney_date'].dt.year >= year_from].copy()
 
-    # Filter for winner
-    if winner != None:
-        winner = winner.replace('_', ' ').replace('+', ' ').title()
-        table = table[table['winner_name'] == winner].copy()
+    if year_to != None:
+        table = table[table['tourney_date'].dt.year <= year_to].copy()
+
+    # Filter for tournament
+    if tournament != None:
+        tournament = tournament.replace('_', ' ').replace('+', ' ').title()
+        table['tourney_name'] = [i.replace("'", '') for i in table['tourney_name']]
+        table = table[table['tourney_name'] == tournament].copy()
 
     # Filter for player
-    if player != None and winner == None:
+    if player != None:
         player = player.replace('_', ' ').replace('+', ' ').title()
         table = table[(table['winner_name'] == player) | (table['loser_name'] == player)].copy()
 
