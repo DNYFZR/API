@@ -1,5 +1,4 @@
 # Postgres API
-import pandas as pd
 from fastapi import FastAPI, Query
 from .postgres import db_pipeline
 
