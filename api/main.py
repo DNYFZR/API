@@ -1,15 +1,16 @@
 # Postgres API
 from fastapi import FastAPI, Query
-from .postgres import db_pipeline
+from .pipelines import postgres_pipeline
 
-# Test data
-db = {'atp_tour' : db_pipeline()}
+# Initialise API instance & data connection
+api = FastAPI()
+db = {
+    'atp_tour' : postgres_pipeline(),
+    }
 
-# Initialise Fast API instance
-app = FastAPI()
 
-# Landing Page
-@app.get("/")
+### Landing Page ###
+@api.get("/")
 async def read_root():
     root = {
         'API parameters': {
@@ -24,8 +25,10 @@ async def read_root():
         }
 
     return root
-# Get request
-@app.get("/{table_name}/")
+
+
+### Get request ###
+@api.get("/{table_name}/")
 async def read_item(table_name: str, player: str = Query(default=None), year_from: int = Query(default=None), year_to: int = Query(default=None), col: list[str] = Query(default=None), tournament: str = Query(default=None), ):  
     # Select table
     table = db[table_name]
@@ -53,3 +56,12 @@ async def read_item(table_name: str, player: str = Query(default=None), year_fro
         table = table[col].copy() 
 
     return table.to_json()
+
+
+    ### Put Request ###
+
+
+    ### Delete Request ###
+
+
+    ### Update Request ###
