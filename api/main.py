@@ -23,13 +23,20 @@ async def read_root():
             }, 
         'Tables': {k: list(v.columns) for k, v in db.items()},
         }
-
     return root
 
-
 ### Get request ###
+
 @api.get("/{table_name}/")
-async def read_item(table_name: str, player: str = Query(default=None), year_from: int = Query(default=None), year_to: int = Query(default=None), col: list[str] = Query(default=None), tournament: str = Query(default=None), ):  
+async def read_item(
+    table_name: str, 
+    player: str = Query(default=None), 
+    year_from: int = Query(default=None), 
+    year_to: int = Query(default=None), 
+    col: list[str] = Query(default=None), 
+    tournament: str = Query(default=None), 
+    ):  
+    
     # Select table
     table = db[table_name]
     
@@ -58,10 +65,10 @@ async def read_item(table_name: str, player: str = Query(default=None), year_fro
     return table.to_json()
 
 
-    ### Put Request ###
+### Put Request ###
 
 
-    ### Delete Request ###
+### Delete Request ###
 
 
-    ### Update Request ###
+### Update Request ###
