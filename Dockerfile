@@ -9,4 +9,4 @@ RUN python -m pip install --no-cache-dir --upgrade pip -r /requirements.txt
 # Copy API repo to image
 COPY ./api /api
 # Run API
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "api.main:api", "--host", "0.0.0.0", "--port", "80"]
