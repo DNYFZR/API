@@ -80,4 +80,4 @@ def get(
         column_names = [col for col in raw.keys()]
         output = [row for row in raw]
 
-    return pd.DataFrame(data=output, columns=column_names).to_json()
+    return {col : [i[n] for i in output] for n, col in enumerate(column_names)}
