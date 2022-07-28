@@ -21,7 +21,17 @@ def home():
 
 # Get request
 @api.get('/{db}')
-def get(db: str, table: str, select_col: list[str] = Query(default= None), date_col: str = Query(default= None), date_from: str = Query(default= None), date_to: str = Query(default= None),):
+def get(
+    db: str, 
+    table: str, 
+    select_col: list[str] = Query(default= None), 
+    date_col: str = Query(default= None), 
+    date_from: str = Query(default= None), 
+    date_to: str = Query(default= None),
+    tournament_col: str = Query(default= None),  
+    tournament: str = Query(default= None), 
+    ):
+
     '''
         Run query on selected table and return dataframe.
     '''
@@ -34,7 +44,9 @@ def get(db: str, table: str, select_col: list[str] = Query(default= None), date_
         else:
             query = query.replace('*', ', '.join(select_col).lstrip(', '))
 
-    # Date fiter
+    ### CTE's ###
+
+    # Date fiter as CTE
     if date_col != None and (date_from != None or date_to != None):
      
         if date_to == None:
@@ -48,6 +60,19 @@ def get(db: str, table: str, select_col: list[str] = Query(default= None), date_
      
         query = f'''{cte} {query.replace(table, 'temp_table')}'''
 
+    # Tournament filter as CTE
+    if tournament_col != None and tournament != None:
+        tournament = f''' '{tournament.replace('_', ' ').title()}' '''
+
+        if date_col == None:
+            cte = f'''WITH temp_table as (SELECT * FROM {table} WHERE {tournament_col} = {tournament})'''
+            query = f'''{cte} {query.replace(table, 'temp_table')}'''
+
+        else:
+            cte_1 = f''', temp_table_2 as (SELECT * FROM temp_table WHERE {tournament_col} = {tournament})'''
+            cte_0, query = query.rsplit('SELECT', maxsplit=1)
+            query = f'''{cte_0} {cte_1} SELECT {query.replace('temp_table', 'temp_table_2')}'''
+     
     # Run query
     engine = init_engine(db=db)
     with engine.connect() as cursor:
