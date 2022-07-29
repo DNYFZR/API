@@ -130,5 +130,4 @@ dmypy.json
 
 # Project files
 dev/
-vscode/
-db_data/
+demo/
