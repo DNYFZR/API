@@ -1,13 +1,16 @@
 # API Development
 
+**Needs Updating**
+
 This project is focused on developing REST APIs for backend development.
 
 Dev tools :
 
 - FastAPI
 - Docker
-- Postgres DB (psycopg2 Python connector)
-- Azure SQL DB (pyodbc Python connector)
+- SQLAlchemy
+  - Postgres DB (psycopg2 Python connector)
+  - Azure SQL DB (pyodbc Python connector)
 
 ---
 
