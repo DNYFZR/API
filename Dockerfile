@@ -7,6 +7,6 @@ COPY ./requirements.txt /requirements.txt
 # Update pip and install requirements
 RUN python -m pip install --no-cache-dir --upgrade pip -r /requirements.txt
 # Copy API repo to image
-COPY ./api_postgres /api
-# Run API
+COPY ./api /api
+# Run API - api.main is the fastAPI insance in the main.py script
 CMD ["uvicorn", "api.main:api", "--host", "0.0.0.0", "--port", "80"]
