@@ -1,74 +1,38 @@
-# Postgres API
 from fastapi import FastAPI, Query
-from .pipelines import postgres_pipeline
+from .query import generate_query
+from .database import pipeline
 
-# Initialise API instance & data connection
+########### API Build ###########
 api = FastAPI()
-db = {
-    'atp_tour' : postgres_pipeline(),
-    }
 
+# API base page
+@api.get('/')
+def home():
+    return '''API Homepage...'''
 
-### Landing Page ###
-@api.get("/")
-async def read_root():
-    root = {
-        'API parameters': {
-            'table_name': 'Name of table - only atp_tour at present', 
-            'player': 'Names with spaces replaced with underscores - rafael_nadal',
-            'tournament': 'Filter for specific tournament', 
-            'year_from': 'Integer for starting year (inclusive)',
-            'year_to': 'Integer for ending year (inclusive)',
-            'col': 'name of column to pull through - each entered separately',
-            }, 
-        'Tables': {k: list(v.columns) for k, v in db.items()},
-        }
-    return root
+# Database get request
+@api.get('/{db}')
+def get_request(db: str, table: str, 
+    select_col: list[str] = Query(default= None), 
+    date_col: str = Query(default= None), 
+    date_from: str = Query(default= None), 
+    date_to: str = Query(default= None),
+    tournament_col: str = Query(default= None),  
+    tournament: str = Query(default= None),
+    player_col: list[str] = Query(default= None),  
+    player: str = Query(default= None), 
+    ):
 
-### Get request ###
-
-@api.get("/{table_name}/")
-async def read_item(
-    table_name: str, 
-    player: str = Query(default=None), 
-    year_from: int = Query(default=None), 
-    year_to: int = Query(default=None), 
-    col: list[str] = Query(default=None), 
-    tournament: str = Query(default=None), 
-    ):  
+    '''
+        Builds CTEs for specified parameters and created query string for SQL Alchemy engine.
+        Then runs the query on selected database table.
+        Returns a JSON / Python dictionary object.
+    '''
+    q =  generate_query(
+        table=table, 
+        select_col=select_col, 
+        date_col=date_col, date_from=date_from, date_to=date_to, 
+        tournament_col=tournament_col, tournament=tournament, 
+        player_col=player_col, player=player)
     
-    # Select table
-    table = db[table_name]
-    
-    # Filter for year
-    if year_from != None:
-        table = table[table['tourney_date'].dt.year >= year_from].copy()
-
-    if year_to != None:
-        table = table[table['tourney_date'].dt.year <= year_to].copy()
-
-    # Filter for tournament
-    if tournament != None:
-        tournament = tournament.replace('_', ' ').replace('+', ' ').title()
-        table['tourney_name'] = [i.replace("'", '') for i in table['tourney_name']]
-        table = table[table['tourney_name'] == tournament].copy()
-
-    # Filter for player
-    if player != None:
-        player = player.replace('_', ' ').replace('+', ' ').title()
-        table = table[(table['winner_name'] == player) | (table['loser_name'] == player)].copy()
-
-    # Filter for cols
-    if col != None:
-        table = table[col].copy() 
-
-    return table.to_json()
-
-
-### Put Request ###
-
-
-### Delete Request ###
-
-
-### Update Request ###
+    return pipeline(query = q, db = db)
