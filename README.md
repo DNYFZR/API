@@ -54,7 +54,7 @@ The project is primarily being developed using :
 
 In this project a virtual environment has been used, as shown below.
 
-````ps1
+````bash
 # Set up project
 mkdir Fast-API-Project && cd Fast-API-Project
 r
