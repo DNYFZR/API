@@ -1,9 +1,16 @@
+import os, sys
+from dotenv import load_dotenv
+
 from sqlalchemy import create_engine, text 
 from sqlalchemy.engine import URL
 
+# Load Environment Variables
+sys.path.append('../')
+load_dotenv('config/api.env')
+
 # Create Engine - default host name for local DB use within Docker contianer
 def pipeline(
-    query:str, db = 'ATP_tour_data', user:str = 'postgres', pw:str = 'Nadal22', 
+    query:str, db = 'ATP_tour_data', user:str = os.getenv('DB_USER'), pw:str = os.getenv('DB_PASS'), 
     server:str = 'host.docker.internal', port:int = 5432, db_type:str = 'postgres'):
     '''
     Create an SQL Alchemy connection engine for the specified connection string credentials and return the engine.
