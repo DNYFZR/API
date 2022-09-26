@@ -47,7 +47,7 @@ docker run -d --name api_container --add-host host.docker.internal:host-gateway 
 
 The project is primarily being developed using :
 
-- Python 3.9
+- Python 3.10
 - FastAPI
 - Docker
 - SQLAlchemy
@@ -57,7 +57,7 @@ In this project a virtual environment has been used, as shown below.
 ````bash
 # Set up project
 mkdir Fast-API-Project && cd Fast-API-Project
-r
+
 # Setup environment
 python -m venv fast_api_env
 cd scripts 
